@@ -2,40 +2,32 @@
 const socket = io();
 
 /* global document */
-const text = document.getElementById('text');
-const messageToServer = document.getElementById('MessageToServer');
-const emitToLast = document.getElementById('emit-to-last');
+const circle = document.getElementById('circle');
 
-messageToServer.addEventListener('click', () => {
-    socket.emit('greeting server', '¡Hola, servidor! 😉');
+const drawCircle = (position) => {
+    circle.style.top = position.top;
+    circle.style.left = position.left;
+};
+
+const drag = (e) => {
+    const position = {
+        top: `${e.clientY}px`,
+        left: `${e.clientX}px`,
+    };
+
+    drawCircle(position);
+
+    socket.emit('circle-position', position);
+};
+
+document.addEventListener('mousedown', (e) => {
+    document.addEventListener('mousemove', drag);
 });
 
-socket.on('welcome', (data) => {
-    console.log(data);
-    text.textContent = data;
+document.addEventListener('mouseup', (e) => {
+    document.removeEventListener('mousemove', drag);
 });
 
-socket.on('user-connected', (data) => {
-    console.log(data);
-});
-
-emitToLast.addEventListener('click', () => {
-    socket.emit('greetingToLast', '¡Hola, último cliente! 👋');
-});
-
-socket.on('salute', (data) => {
-    console.log(data);
-});
-
-//on, once, off
-socket.on('on', () => {
-    console.log('Se emite varias veces');
-});
-
-socket.once('once', () => {
-    console.log('Se emite una sola vez');
-});
-
-socket.off('off', () => {
-    console.log('Se desactiva la emisión');
+socket.on('move-circle', (position) => {
+    drawCircle(position);
 });
