@@ -18,16 +18,15 @@ app.get('/', (_req, res) => {
 });
 
 io.on('connection', (socket) => {
-    console.log(`Clientes conectados ${io.engine.clientsCount}`);
-    console.log(`Cliente conectado: ${socket.id}`);
+    //Emision Basica
+    socket.emit('welcome', 'Bienvenido al servidor!');
 
-    // socket.on('disconnect', () => {
-    //     console.log(`Cliente desconectado: ${socket.id}`);
-    // });
-
-    socket.conn.once('upgrade', () => {
-        console.log(`Pasamos de HTTP a ${socket.conn.transport.name}`);
+    socket.on('server', (data) => {
+        console.log(data);
     });
+
+    //Emision a todos los clientes
+    io.emit('user-connected', `Un nuevo usuario se ha conectado! ${socket.id}`);
 });
 
 httpServer.listen(3000, () => {

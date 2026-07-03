@@ -1,36 +1,19 @@
+/* global io */
 const socket = io();
 
-function checkSocketStatus(){
-    console.log(`Estado del socket: ${socket.connected ? 'Conectado' : 'Desconectado'}`);
-}
+/* global document */
+const text = document.getElementById("text");
+const MessageToServer = document.getElementById("MessageToServer");
 
-socket.on('connect', () => {
-    console.log(`Cliente conectado: ${socket.id}`);
-    checkSocketStatus();
+MessageToServer.addEventListener("click", () => {
+    socket.emit("server", "¡Hola, servidor! 😉");
 });
 
-socket.on('connect_error', (error) => {
-    console.error(`
-        No pude Reconectarme
-        Error en el socket: ${error}
-        `);
-    checkSocketStatus();
+socket.on("welcome", (data) => {
+    console.log(data);
+    text.textContent = data;
 });
 
-socket.on('disconnect', () => {
-    console.log(`Cliente desconectado: ${socket.id}`);
-    checkSocketStatus();
-})
-
-// socket.io.on('reconnect_attempt', () => {
-//     console.log('Intentando reconectar...');
-// });
-
-socket.io.on('reconnect_attempt', (attempt) => {
-    console.log('Intentando reconectar...', attempt);
+socket.on("user-connected", (data) => {
+    console.log(data);
 });
-
-socket.io.on('reconnect', (attempt) => {
-    console.log('Reconectado con éxito!', attempt);
-});
-
