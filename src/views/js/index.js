@@ -2,32 +2,33 @@
 const socket = io();
 
 /* global document */
-const circle = document.getElementById('circle');
+const connectRoomOne = document.getElementById('connectRoomOne');
+const connectRoomTwo = document.getElementById('connectRoomTwo');
+const connectRoomThree = document.getElementById('connectRoomThree');
 
-const drawCircle = (position) => {
-    circle.style.top = position.top;
-    circle.style.left = position.left;
-};
-
-const drag = (e) => {
-    const position = {
-        top: `${e.clientY}px`,
-        left: `${e.clientX}px`,
-    };
-
-    drawCircle(position);
-
-    socket.emit('circle-position', position);
-};
-
-document.addEventListener('mousedown', (e) => {
-    document.addEventListener('mousemove', drag);
+connectRoomOne.addEventListener('click', () => {
+    socket.emit('joinRoom', 'room1');
 });
 
-document.addEventListener('mouseup', (e) => {
-    document.removeEventListener('mousemove', drag);
+connectRoomTwo.addEventListener('click', () => {
+    socket.emit('joinRoom', 'room2');
 });
 
-socket.on('move-circle', (position) => {
-    drawCircle(position);
+connectRoomThree.addEventListener('click', () => {
+    socket.emit('joinRoom', 'room3');
+});
+
+
+// Enviar Mensje
+const sendMessageButton = document.getElementById('sendMessage');
+sendMessageButton.addEventListener('click', () => {
+    /* global prompt */
+    const message = prompt('Ingrese su mensaje:');
+    socket.emit("UserMessage", message);
+})
+
+socket.on('sendMessage', (data) => {
+    const li = document.createElement('li');
+    li.textContent = `Mensaje de ${data.user}: ${data.text}`;
+    document.getElementById(data.room).appendChild(li);
 });
