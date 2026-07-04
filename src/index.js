@@ -21,6 +21,12 @@ io.on('connection', (socket) => {
     socket.connectedRoom = '';
 
     socket.on('joinRoom', (room) => {
+
+        if (socket.connectedRoom) {
+            socket.leave(socket.connectedRoom);
+            console.log(`Client ${socket.id} left ${socket.connectedRoom}`);
+        }
+
         switch (room) {
             case 'room1':
                 socket.join(room);
