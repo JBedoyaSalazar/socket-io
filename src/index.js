@@ -17,12 +17,24 @@ app.get('/', (_req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
+//Middleware de autenticación para Socket.IO
+io.use((socket, next) => {
+    const token = socket.handshake.auth.token;
+    if (!token) {
+        return next(new Error('Authentication error'));
+    }
+
+    if (token === 'Mr. Bowling') {
+        next();
+    }
+
+    return next(new Error('Invalid token'));
+});
+
 io.on('connection', (socket) => {
-    socket.on('circle-position', (position) => {
-        socket.broadcast.emit('move-circle', position);
-    });
+    console.log('A user connected', socket.id);
 });
 
 httpServer.listen(3000, () => {
     console.log(`Server running on http://localhost:3000`);
-});
+}); 
