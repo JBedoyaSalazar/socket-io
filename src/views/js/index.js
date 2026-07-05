@@ -2,22 +2,32 @@
 const socket = io();
 /* global document */
 
-const sendToAllConnectedUsersButton = document.getElementById('sendToAllConnectedUsers');
-const disconnectButton = document.getElementById('disconnect');
-const reconnectButton = document.getElementById('reconnect');
+const circle = document.getElementById('circle');
 
-sendToAllConnectedUsersButton.addEventListener('click', () => {
-    if (socket.connected) {
-        socket.emit('isConected', { message: 'Hello from the client!' });
-    }
+const drawCircle = (position) => {
+    circle.style.top = position.top;
+    circle.style.left = position.left;
+};
+
+const drag = (e) => {
+    const position = {
+        top: `${e.clientY}px`,
+        left: `${e.clientX}px`,
+    };
+
+    drawCircle(position);
+    console.log(`Enviando Evento al servidor`);
+    socket.volatile.emit('circle-position', position);
+};
+
+document.addEventListener('mousedown', (e) => {
+    document.addEventListener('mousemove', drag);
 });
 
-disconnectButton.addEventListener('click', () => {
-    socket.disconnect();
-    console.log('I lost my connection to the server');
+document.addEventListener('mouseup', (e) => {
+    document.removeEventListener('mousemove', drag);
 });
 
-reconnectButton.addEventListener('click', () => {
-    socket.connect();
-    console.log('Reconnected to the server');
+socket.on('move-circle', (position) => {
+    drawCircle(position);
 });

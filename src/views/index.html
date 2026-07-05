@@ -1,18 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servidor Con Express Y Socket.IO</title>
-    <link rel="stylesheet" href="./css/styles.css">
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Servidor Con Express Y Socket.IO</title>
+        <link rel="stylesheet" href="./css/styles.css" />
+    </head>
+    <body>
+        <div id="circle"></div>
 
-    <button id="sendToAllConnectedUsers">Send to All Connected Users</button>
-    <button id="disconnect">Disconnect</button>
-    <button id="reconnect">Reconnect</button>
-    
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="./js/index.js"></script>
-</body>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="./js/index.js"></script>
+    </body>
 </html>

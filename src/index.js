@@ -17,18 +17,9 @@ app.get('/', (_req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-
 io.on('connection', (socket) => {
-    socket.on('isConected', (data) => {
-        console.log(`Message received: ${data.message} from ${socket.id}`);
-    });
-
-    socket.on('disconnect', () => {
-        console.log(`User disconnected: ${socket.id}`);
-    });
-
-    socket.on('connect', () => {
-        console.log(`User connected: ${socket.id}`);
+    socket.on('circle-position', (position) => {
+        socket.broadcast.emit('move-circle', position);
     });
 });
 
