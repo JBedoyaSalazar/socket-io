@@ -17,23 +17,19 @@ app.get('/', (_req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-const teachers = io.of('/teachers');
-const students = io.of('/students');
 
-teachers.on('connection', (socket) => {
-    console.log(`Profesor conectado ${socket.id}`);
+io.on('connection', (socket) => {
+    socket.on('isConected', (data) => {
+        console.log(`Message received: ${data.message} from ${socket.id}`);
+    });
 
-    socket.on('sendMessage', (data) => {
-        teachers.emit('newMessage', data);
-    })
-});
+    socket.on('disconnect', () => {
+        console.log(`User disconnected: ${socket.id}`);
+    });
 
-students.on('connection', (socket) => {
-    console.log(`Estudiante conectado ${socket.id}`);
-
-    socket.on('sendMessage', (data) => {
-        students.emit('newMessage', data);
-    })
+    socket.on('connect', () => {
+        console.log(`User connected: ${socket.id}`);
+    });
 });
 
 httpServer.listen(3000, () => {

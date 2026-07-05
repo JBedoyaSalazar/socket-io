@@ -1,38 +1,23 @@
 /* global io */
+const socket = io();
 /* global document */
-/* global prompt */
 
-const user = prompt('Ingrese su nombre de usuario');
-const teacher = ['Platzi', 'Juan', 'Pedro', 'Maria'];
+const sendToAllConnectedUsersButton = document.getElementById('sendToAllConnectedUsers');
+const disconnectButton = document.getElementById('disconnect');
+const reconnectButton = document.getElementById('reconnect');
 
-let socketNameSpace, group
-const chat = document.getElementById('chat');
-const nameSpace = document.getElementById('nameSpace');
-
-if (teacher.includes(user)) {
-    socketNameSpace = io('/teachers');
-    group = 'teachers';
-} else {
-    socketNameSpace = io('/students');
-    group = 'students';
-}
-
-socketNameSpace.on('connect', () => {
-    nameSpace.innerHTML = `${group}`;
+sendToAllConnectedUsersButton.addEventListener('click', () => {
+    if (socket.connected) {
+        socket.emit('isConected', { message: 'Hello from the client!' });
+    }
 });
 
-//Send Messages logic
-const sendMessage = document.getElementById('sendMessage');
-sendMessage.addEventListener('click', () => {
-    const message = prompt('Ingrese su mensaje');
-    socketNameSpace.emit('sendMessage', {
-        message,
-        user
-    });
+disconnectButton.addEventListener('click', () => {
+    socket.disconnect();
+    console.log('I lost my connection to the server');
 });
 
-socketNameSpace.on('newMessage', (data) => {
-    const li = document.createElement('li');
-    li.innerHTML = `<strong>${data.user}:</strong> ${data.message}`;
-    chat.appendChild(li);
+reconnectButton.addEventListener('click', () => {
+    socket.connect();
+    console.log('Reconnected to the server');
 });
