@@ -1,34 +1,38 @@
 /* global io */
-const socket = io();
-
 /* global document */
-const connectRoomOne = document.getElementById('connectRoomOne');
-const connectRoomTwo = document.getElementById('connectRoomTwo');
-const connectRoomThree = document.getElementById('connectRoomThree');
+/* global prompt */
 
-connectRoomOne.addEventListener('click', () => {
-    socket.emit('joinRoom', 'room1');
+const user = prompt('Ingrese su nombre de usuario');
+const teacher = ['Platzi', 'Juan', 'Pedro', 'Maria'];
+
+let socketNameSpace, group
+const chat = document.getElementById('chat');
+const nameSpace = document.getElementById('nameSpace');
+
+if (teacher.includes(user)) {
+    socketNameSpace = io('/teachers');
+    group = 'teachers';
+} else {
+    socketNameSpace = io('/students');
+    group = 'students';
+}
+
+socketNameSpace.on('connect', () => {
+    nameSpace.innerHTML = `${group}`;
 });
 
-connectRoomTwo.addEventListener('click', () => {
-    socket.emit('joinRoom', 'room2');
+//Send Messages logic
+const sendMessage = document.getElementById('sendMessage');
+sendMessage.addEventListener('click', () => {
+    const message = prompt('Ingrese su mensaje');
+    socketNameSpace.emit('sendMessage', {
+        message,
+        user
+    });
 });
 
-connectRoomThree.addEventListener('click', () => {
-    socket.emit('joinRoom', 'room3');
-});
-
-
-// Enviar Mensje
-const sendMessageButton = document.getElementById('sendMessage');
-sendMessageButton.addEventListener('click', () => {
-    /* global prompt */
-    const message = prompt('Ingrese su mensaje:');
-    socket.emit("UserMessage", message);
-})
-
-socket.on('sendMessage', (data) => {
+socketNameSpace.on('newMessage', (data) => {
     const li = document.createElement('li');
-    li.textContent = `Mensaje de ${data.user}: ${data.text}`;
-    document.getElementById(data.room).appendChild(li);
+    li.innerHTML = `<strong>${data.user}:</strong> ${data.message}`;
+    chat.appendChild(li);
 });

@@ -17,45 +17,23 @@ app.get('/', (_req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-io.on('connection', (socket) => {
-    socket.connectedRoom = '';
+const teachers = io.of('/teachers');
+const students = io.of('/students');
 
-    socket.on('joinRoom', (room) => {
+teachers.on('connection', (socket) => {
+    console.log(`Profesor conectado ${socket.id}`);
 
-        if (socket.connectedRoom) {
-            socket.leave(socket.connectedRoom);
-            console.log(`Client ${socket.id} left ${socket.connectedRoom}`);
-        }
+    socket.on('sendMessage', (data) => {
+        teachers.emit('newMessage', data);
+    })
+});
 
-        switch (room) {
-            case 'room1':
-                socket.join(room);
-                socket.connectedRoom = room;
-                console.log(`Client ${socket.id} joined ${room}`);
-                break;
-            case 'room2':
-                socket.join(room);
-                socket.connectedRoom = room;
-                console.log(`Client ${socket.id} joined ${room}`);
-                break;
-            case 'room3':
-                socket.join(room);
-                socket.connectedRoom = room;
-                console.log(`Client ${socket.id} joined ${room}`);
-                break;
-            default:
-                console.log(`Client ${socket.id} attempted to join invalid room`);
-        }
-    });
+students.on('connection', (socket) => {
+    console.log(`Estudiante conectado ${socket.id}`);
 
-    socket.on('UserMessage', (message) => {
-        if (socket.connectedRoom) {
-            console.log(`Message from ${socket.id} in ${socket.connectedRoom}: ${message}`);
-            io.to(socket.connectedRoom).emit('sendMessage', { user: socket.id, text: message, room: socket.connectedRoom });
-        } else {
-            console.log(`Client ${socket.id} attempted to send message without joining a room`);
-        }
-    });
+    socket.on('sendMessage', (data) => {
+        students.emit('newMessage', data);
+    })
 });
 
 httpServer.listen(3000, () => {
