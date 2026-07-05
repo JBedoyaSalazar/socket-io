@@ -18,21 +18,10 @@ app.get('/', (_req, res) => {
 });
 
 //Middleware de autenticación para Socket.IO
-io.use((socket, next) => {
-    const token = socket.handshake.auth.token;
-    if (!token) {
-        return next(new Error('Authentication error'));
-    }
-
-    if (token === 'Mr. Bowling') {
-        next();
-    }
-
-    return next(new Error('Invalid token'));
-});
-
 io.on('connection', (socket) => {
-    console.log('A user connected', socket.id);
+    socket.on('circle-position', (position) => {
+        socket.broadcast.emit('move-circle', position);
+    });
 });
 
 httpServer.listen(3000, () => {

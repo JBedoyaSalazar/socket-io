@@ -1,11 +1,32 @@
 /* global io */
-const socket = io({
-    auth: {
-        token: 'Mr. Bowling'
-    }
+const socket = io();
+/* global document */
+
+const circle = document.getElementById('circle');
+
+const drawCircle = (position) => {
+    circle.style.top = position.top;
+    circle.style.left = position.left;
+};
+
+const drag = (e) => {
+    const position = {
+        top: `${e.clientY}px`,
+        left: `${e.clientX}px`,
+    };
+
+    drawCircle(position);
+    socket.volatile.emit('circle-position', position);
+};
+
+document.addEventListener('mousedown', (e) => {
+    document.addEventListener('mousemove', drag);
 });
 
-// Error de autenticacion: 
-socket.on('connect_error', (err) => {
-    console.log(err.message);
+document.addEventListener('mouseup', (e) => {
+    document.removeEventListener('mousemove', drag);
+});
+
+socket.on('move-circle', (position) => {
+    drawCircle(position);
 });
